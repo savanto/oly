@@ -1,0 +1,15 @@
+# Ignore all files to catch all compiled binaries
+*
+# Do not ignore source code
+!*.h
+!*.cpp
+
+# Do not ignore README, LICENSE, .gitignore
+!README*
+!LICENSE*
+!.gitignore
+
+# USACO-specific
+# Do not ignore input files
+!*.in*
+!*.txt*
