@@ -44,16 +44,22 @@ int main()
 			{
 				if (i <= w)
 				{
-					if (i + v[i-1][w-i] > v[i-1][w])
+					if (i + v[i-1][w-i] >= v[i-1][w])
+					{
 						v[i][w] = i + v[i-1][w-i];
+						if (i + v[i-1][w-i] == W)
+							cout << i << ',' << w << ':' << i + v[i-1][w-i] << endl;
+					}
 					else
+					{
 						v[i][w] = v[i-1][w];
-					++s;
+						if (v[i-1][w] == W)
+							cout << i << ',' << w << ':' << i + v[i-1][w-i] << endl;
+					}
 				}
 				else
 				{
 					v[i][w] = v[i-1][w];
-					--s;
 				}
 			}
 		}
