@@ -1,3 +1,6 @@
-# USACO-specific
-bin/
-*.out
+# Exclude all except source files, input files, Makefile, .gitignore
+*
+!*.cpp
+!*.in
+!Makefile
+!.gitignore
