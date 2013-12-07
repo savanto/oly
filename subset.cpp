@@ -37,24 +37,22 @@ int main()
 		int v[N+1][W+1], i, w, s = 0;
 		for (w = 0; w <= W; ++w)
 			v[0][w] = 0;
-		for (i = 1; i <= N; ++i)
-		{
+		for (i = 0; i <= N; ++i)
 			v[i][0] = 0;
-			for (w = 0; w <= W; ++w)
+		for (w = 1; w <= W; ++w)
+		{
+			for (i = 0; i <= N; ++i)
 			{
 				if (i <= w)
 				{
 					if (i + v[i-1][w-i] >= v[i-1][w])
 					{
 						v[i][w] = i + v[i-1][w-i];
-						if (i + v[i-1][w-i] == W)
-							cout << i << ',' << w << ':' << i + v[i-1][w-i] << endl;
+						cout << i + v[i-1][w-i] << ">=" <<v[i-1][w] << endl;
 					}
 					else
 					{
 						v[i][w] = v[i-1][w];
-						if (v[i-1][w] == W)
-							cout << i << ',' << w << ':' << i + v[i-1][w-i] << endl;
 					}
 				}
 				else
