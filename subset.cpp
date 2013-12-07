@@ -11,6 +11,11 @@ using namespace std;
 #define INFILE "subset.in"
 #define OUTFILE "subset.out"
 
+int max(int a, int b)
+{
+	return (a > b ? a : b);
+}
+
 int main()
 {
 	ifstream fin(INFILE);
@@ -29,29 +34,37 @@ int main()
 	else	// Variation of the Knapsack problem
 	{
 		W /= 2;	// this is the capacity of the knapsack
-		int s[N+1][W+1], i, j;
-		for (i = 0, j = 0; j <= W; ++j)
-			s[i][j] = 0;
+		int v[N+1][W+1], i, w, s = 0;
+		for (w = 0; w <= W; ++w)
+			v[0][w] = 0;
 		for (i = 1; i <= N; ++i)
 		{
-			s[i][0] = 0;
-			for (j = 1; j <= W; ++j)
+			v[i][0] = 0;
+			for (w = 0; w <= W; ++w)
 			{
-				if (s[i-1][j])
-					s[i][j] = 1;
-				else if (s[i-1][j-i])
-					s[i][j] = 1;
+				if (i <= w)
+				{
+					if (i + v[i-1][w-i] > v[i-1][w])
+						v[i][w] = i + v[i-1][w-i];
+					else
+						v[i][w] = v[i-1][w];
+					++s;
+				}
 				else
-					s[i][j] = 0;
+				{
+					v[i][w] = v[i-1][w];
+					--s;
+				}
 			}
 		}
 
 		for (i = 0; i <= N; ++i)
 		{
-			for (j = 0; j <= W; ++j)
-				cout << s[i][j] << ' ';
+			for (w = 0; w <= W; ++w)
+				cout << v[i][w] << ' ';
 			cout << endl;
 		}
+		cout << s << endl;
 	}
 
 
