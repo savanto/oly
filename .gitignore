@@ -3,5 +3,6 @@
 !*.cpp
 !*.in
 !*.in_*
+!*.txt
 !Makefile
 !.gitignore

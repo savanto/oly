@@ -8,11 +8,41 @@ LANG: C++
 #include <fstream>
 #include <vector>
 #include <string>
-#include <algorithm>
 using namespace std;
 
 #define INFILE "prefix.in"
 #define OUTFILE "prefix.out"
+
+// sorts by descending lengths
+// vector size is going to be <= 200, insertion sort will do
+void sort(vector<string> &v)
+{
+	int size = v.size();
+	for (int i = 1; i < size; ++i)
+		for (int j = i; j > 0; --j)
+		{
+			if (v[j].length() < v[j-1].length())
+				break;
+			string temp = v[j];
+			v[j] = v[j-1];
+			v[j-1] = temp;
+		}
+}
+
+int prefix(const vector<string> &p, const string &s, int k)
+{
+	if (k >= s.length())
+		return k;
+	int longest = k;
+	for (int i = 0; i < p.size(); ++i)
+		if (p[i] == s.substr(k, p[i].length()))
+		{
+			int n = prefix(p, s, k + p[i].length());
+			if (n > longest)
+				longest = n;
+		}
+	return longest;
+}
 
 int main()
 {
@@ -30,23 +60,29 @@ int main()
 		sequence += p;
 	fin.close();
 
-	sort(primitives.begin(), primitives.end());
-	int k = 0, s = sequence.length();
+/*
+	sort(primitives);
+
+	int k = 0, s = sequence.length(), r = primitives.size();
 	while (k < s)
 	{
 		int i;
-		for (i = primitives.size() - 1; i >= 0; --i)
+		for (i = 0; i < r; ++i)
 		{
 			int p = primitives[i].length();
 			if (primitives[i] == sequence.substr(k, p))
 			{
 				k += p;
+				cout << k << endl;
 				break;
 			}
 		}
-		if (i < 0)
+		if (i >= r)
 			break;
 	}
+*/
+	cout << sequence.length() << endl;
+	int k = prefix(primitives, sequence, 0);
 
 	ofstream fout(OUTFILE);
 	fout << k << endl;
