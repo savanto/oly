@@ -31,19 +31,19 @@ int main()
 	fin.close();
 
 	for (p = 0; p < N; ++p)
-	{
 		for (c = 0; c < N; ++c)
-		{
 			for (int cp = 0; cp < N; ++cp)
-			{
 				if (control[p][cp] > 50)
 					control[p][c] += control[cp][c];
-			}
-		}
-	}
+
+	for (p = 0; p < N; ++p)
+		for (c = 0; c < N; ++c)
+			if (control[p][c] < 50)
+				for (int cp = 0; cp < N; ++cp)
+					if (control[p][cp] > 50 && control[cp][c] > 50)
+						control[p][c] = 51;
 
 	ofstream fout(OUTFILE);
-
 	for (p = 0; p < N; ++p)
 		for (c = 0; c < N; ++c)
 			if (p != c)
