@@ -6,127 +6,122 @@ LANG: C++
 
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <algorithm>
 using namespace std;
 
 #define INFILE "lamps.in"
 #define OUTFILE "lamps.out"
 
-#define ODD		0x5555555555555555
-#define EVEN	0xAAAAAAAAAAAAAAAA
-#define THREES	0x9249249249249249
-#define ON		0xFFFFFFFFFFFFFFFF
-#define OFF		0x0000000000000000
-typedef unsigned long long int Lamps;
-int N, C;
-
-struct Config
+// Toggle all lamps
+void button1(int lamps[], int N)
 {
-	Lamps a, b;
-	Config(Lamps aa = 0, Lamps bb = 0) : a(aa), b(bb) {}
-	Config(const Config & copy) : a(copy.a), b(copy.b) {}
-	Config & operator=(const Config & rhs) { a = rhs.a; b = rhs.b; return *this; }
-	Config & operator+=(const int lamp)
-	{
-		if (lamp >= 64)
-			b |= 1 << lamp-1;
-		else
-			a |= 1 << lamp-1;
-		return *this;
-	}
-	Config & operator-=(const int lamp)
-	{
-		if (lamp >= 64)
-			b &= ~(1 << lamp-1);
-		else
-			a &= ~(1 << lamp-1);
-		return *this;
-	}
-	Config & operator&=(const Config & rhs)
-	{ a &= rhs.a; b &= rhs.b; return *this; }
-	Config & operator|=(const Config & rhs)
-	{ a |= rhs.a; b |= rhs.b; return *this; }
-	Config button1() { return Config(~a, ~b); }
-	Config button2() { return Config(a ^ ODD, b ^ ODD); }
-	Config button3() { return Config(a ^ EVEN, b ^ EVEN); }
-	Config button4() { return Config(a ^ THREES, b ^ THREES); }
-	Config button(int b)
-	{
-		switch (b)
-		{
-			case 1: return button1();
-			case 2: return button2();
-			case 3: return button3();
-			case 4: return button4();
-			default: return Config(*this);
-		}
-	}
-};
-ostream & operator<<(ostream & os, const Config & lamps)
-{
-	int n = N, i;
-	Lamps bit;
-	for (i = 0, bit = 1; i < 64 && n > 0; ++i, --n, bit <<= 1)
-		os << (lamps.a & bit ? 1 : 0);
-	for (bit = 1; n > 0; --n, bit <<= 1)
-		os << (lamps.b & bit ? 1 : 0);
-	return os;
+	for (int i = 0; i < N; ++i)
+		lamps[i] = (lamps[i] + 1) % 2;
 }
-inline Config operator&(Config lhs, const Config & rhs)
-{ lhs &= rhs; return lhs; }
-inline Config operator|(Config lhs, const Config & rhs)
-{ lhs |= rhs; return lhs; }
+
+// Toggle odd lamps
+void button2(int lamps[], int N)
+{
+	for (int i = 0; i < N; i += 2)
+		lamps[i] = (lamps[i] + 1) % 2;
+}
+
+// Toggle even lamps
+void button3(int lamps[], int N)
+{
+	for (int i = 1; i < N; i += 2)
+		lamps[i] = (lamps[i] + 1) % 2;
+}
+
+// Toggle every third lamp after the first
+void button4(int lamps[], int N)
+{
+	for (int i = 0; i < N; i += 3)
+		lamps[i] = (lamps[i] + 1) % 2;
+}
+
+// Check that given lamps configuration is valid against the given FINAL config
+bool valid(int lamps[], int FINAL[], int N)
+{
+	for (int i = 0; i < N; ++i)
+		if (FINAL[i] != -1)
+			if (FINAL[i] != lamps[i])
+				return false;
+	return true;
+}
+
+void print(int lamps[], int N, ofstream &fout)
+{
+	for (int i = 0; i < N; ++i)
+		fout << lamps[i];
+	fout << endl;
+}
 
 int main()
 {
 	ifstream fin(INFILE);
+	int N, C;
 	fin >> N >> C;
-	int lamp;
-	fin >> lamp;
-	Config CHECK_ON(OFF, OFF), CHECK_OFF(ON, ON);
-	while (lamp != -1)
+	int FINAL[N], lamps[N], i;
+	for (i = 0; i < N; ++i)
 	{
-		CHECK_ON += lamp;
-		fin >> lamp;
+		FINAL[i] = -1;	// unknown state lamps
+		lamps[i] = 1;	// starting lamps all ON
 	}
-	fin >> lamp;
-	while (lamp != -1)
+	fin >> i;
+	while (i != -1)		// read in ON lamps
 	{
-		CHECK_OFF -= lamp;
-		fin >> lamp;
+		FINAL[i-1] = 1;
+		fin >> i;
+	}
+	fin >> i;
+	while (i != -1)		// read in OFF lamps
+	{
+		FINAL[i-1] = 0;
+		fin >> i;
 	}
 	fin.close();
 
-	Config lamps(ON, ON);
-	C %= 4;
-	int L = C;//1;
-//	for (; C > 0; --C)
-//		L *= 2;
-
-	for (int b1 = 0; b1 < L; ++b1)
+	vector<string> results;
+	for (int b1 = 0; b1 < 2; ++b1)
 	{
-		for (int b2 = 0; b2 < L; ++b2)
+		for (int b2 = 0; b2 < 2; ++b2)
 		{
-			for (int b3 = 0; b3 < L; ++b3)
+			for (int b3 = 0; b3 < 2; ++b3)
 			{
-				for (int b4 = 0; b4 < L; ++b4)
+				for (int b4 = 0; b4 < 2; ++b4)
 				{
-		Config test = lamps.button(1);
-		cout << test << endl;
-			test = test.button(2);
-			cout << test << endl;
-				test = test.button(3);
-				cout << test << endl;
-					test = test.button(4);
-					cout << test << endl;
+					if (valid(lamps, FINAL, N))
+					{
+						if (b1 + b2 + b3 + b4 <= C && (b1 + b2 + b3 + b4) % 2 == C % 2)
+						{
+							stringstream ss;
+							for (int i = 0; i < N; ++i)
+								ss << lamps[i];
+							results.push_back(ss.str());
+						}
+					}
+					button4(lamps, N);
 				}
+				button3(lamps, N);
 			}
+			button2(lamps, N);
 		}
+		button1(lamps, N);
 	}
 
-
-
 	ofstream fout(OUTFILE);
-
+	if (results.size() == 0)
+		fout << "IMPOSSIBLE" << endl;
+	else
+	{
+		sort(results.begin(), results.end());
+		for (int i = 0; i < results.size(); ++i)
+			fout << results[i] << endl;
+	}
 	fout.close();
 	return 0;
 }
