@@ -8,6 +8,7 @@ LANG: C++
 #include <fstream>
 #include <vector>
 #include <string>
+#include <algorithm>
 using namespace std;
 
 #define INFILE "prefix.in"
@@ -29,12 +30,26 @@ int main()
 		sequence += p;
 	fin.close();
 
-	for (int i = 0; i < primitives.size(); ++i)
-		cout << primitives[i] << endl;
-	cout << sequence << endl;
+	sort(primitives.begin(), primitives.end());
+	int k = 0, s = sequence.length();
+	while (k < s)
+	{
+		int i;
+		for (i = primitives.size() - 1; i >= 0; --i)
+		{
+			int p = primitives[i].length();
+			if (primitives[i] == sequence.substr(k, p))
+			{
+				k += p;
+				break;
+			}
+		}
+		if (i < 0)
+			break;
+	}
 
 	ofstream fout(OUTFILE);
-
+	fout << k << endl;
 	fout.close();
 	return 0;
 }
