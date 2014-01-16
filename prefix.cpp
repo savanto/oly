@@ -60,29 +60,11 @@ int main()
 		sequence += p;
 	fin.close();
 
-/*
-	sort(primitives);
-
-	int k = 0, s = sequence.length(), r = primitives.size();
-	while (k < s)
-	{
-		int i;
-		for (i = 0; i < r; ++i)
-		{
-			int p = primitives[i].length();
-			if (primitives[i] == sequence.substr(k, p))
-			{
-				k += p;
-				cout << k << endl;
-				break;
-			}
-		}
-		if (i >= r)
-			break;
-	}
-*/
 	cout << sequence.length() << endl;
-	int k = prefix(primitives, sequence, 0);
+//	int k = prefix(primitives, sequence, 0);
+
+
+
 
 	ofstream fout(OUTFILE);
 	fout << k << endl;
